@@ -66,7 +66,7 @@ ${activeRoles.map((r) => `- ${r}`).join('\n')}
 
 export async function generateCopy(input: ContentInput, template: Template): Promise<GeneratedCopy> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY 환경 변수가 설정되지 않았습니다.');
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY가 설정되지 않았습니다. 로컬에서 실행하세요.');
 
   const client = new Anthropic({ apiKey });
 
