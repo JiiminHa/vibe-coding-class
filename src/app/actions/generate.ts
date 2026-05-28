@@ -70,10 +70,24 @@ export async function generateCopy(input: ContentInput, template: Template): Pro
 
   const client = new Anthropic({ apiKey });
 
+  const userContent: Anthropic.MessageParam['content'] = input.photoDataUrl
+    ? [
+        {
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: input.photoDataUrl.split(';')[0].split(':')[1] as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+            data: input.photoDataUrl.split(',')[1],
+          },
+        },
+        { type: 'text', text: `위 이미지를 참고해서 카피를 작성해주세요.\n\n${buildPrompt(input, template)}` },
+      ]
+    : buildPrompt(input, template);
+
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 2048,
-    messages: [{ role: 'user', content: buildPrompt(input, template) }],
+    messages: [{ role: 'user', content: userContent }],
   });
 
   const raw = message.content[0];

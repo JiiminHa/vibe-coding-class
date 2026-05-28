@@ -120,6 +120,7 @@ export default function AppPage() {
             <ContentInputForm
               subject={contentInput.subject}
               keywords={contentInput.keywords}
+              photoDataUrl={contentInput.photoDataUrl}
               onContentChange={handleContentChange}
             />
           </div>
