@@ -6,13 +6,22 @@ interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export default function TextInput({ label, id, className = '', ...props }: TextInputProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-primary">
+    <div className="flex flex-col gap-1.5">
+      <label
+        htmlFor={id}
+        className="text-[11px] font-bold tracking-[0.12em] uppercase text-black"
+      >
         {label}
       </label>
       <input
         id={id}
-        className={`rounded-[12px] border border-hairline bg-white px-4 py-2.5 text-sm text-primary placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-brand-pink/40 min-h-[44px] ${className}`}
+        className={`
+          border-[1.5px] border-black bg-white px-4 py-2.5
+          text-sm text-black placeholder:text-[#999]
+          focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:ring-offset-0
+          min-h-[44px] rounded-none
+          ${className}
+        `}
         {...props}
       />
     </div>

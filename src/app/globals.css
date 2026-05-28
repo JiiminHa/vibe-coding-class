@@ -1,50 +1,83 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand & Accent */
-  --color-primary: #0a0a0a;
-  --color-brand-pink: #ff4d8b;
-  --color-brand-teal: #1a3a3a;
-  --color-brand-lavender: #b8a4ed;
-  --color-brand-peach: #ffb084;
-  --color-brand-ochre: #e8b94a;
-  --color-brand-mint: #a4d4c5;
-  --color-brand-coral: #ff6b5a;
+  /* ── Core Palette ── */
+  --color-bg:      #FFFFFF;
+  --color-surface: #F2F2F2;
+  --color-ink:     #000000;
+  --color-muted:   #555555;
+  --color-accent:  #CCFF00;   /* neon lime — primary action */
+  --color-border:  #000000;
 
-  /* Surface */
-  --color-canvas: #fffaf0;
-  --color-surface-soft: #faf5e8;
-  --color-surface-card: #f5f0e0;
-  --color-surface-strong: #ebe6d6;
-  --color-hairline: #e5e5e5;
+  /* legacy aliases (컴포넌트 호환) */
+  --color-primary:     #000000;
+  --color-canvas:      #FFFFFF;
+  --color-hairline:    #000000;
+  --color-surface-card: #F2F2F2;
 
-  /* Text */
-  --color-ink: #0a0a0a;
+  /* ── Typography ── */
+  --font-body:    var(--font-body),    'Space Grotesk',   sans-serif;
+  --font-display: var(--font-display), 'Barlow Condensed', sans-serif;
 
-  /* Border Radius */
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-pill: 9999px;
+  /* ── Shape — brutalist: no radius ── */
+  --radius-none: 0px;
+  --radius-sm:   2px;
+  --radius-md:   0px;
+  --radius-lg:   0px;
+  --radius-xl:   0px;
+  --radius-pill: 0px;
+
+  /* ── Border ── */
+  --border-width: 1.5px;
+}
+
+/* ── Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: var(--color-canvas);
+  background-color: var(--color-bg);
   color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── Display headings ── */
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* ── Brutal grid border utility ── */
+.border-brutal {
+  border: var(--border-width) solid var(--color-border);
+}
+
+/* ── Section label (STEP 01 / STEP 02 …) ── */
+.label-step {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ── Accent highlight (neon underline, bg) ── */
+.accent-bg  { background-color: var(--color-accent); }
+.accent-text { color: var(--color-accent); }
+
+/* ── Slide-up animation ── */
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-slide-up {
-  animation: slide-up 0.6s ease-out both;
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
