@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CardFlow
 
-## Getting Started
+**배포 URL**: https://vibe-coding-class-seven.vercel.app
 
-First, run the development server:
+Figma 카드뉴스 자동화 도구. Figma 템플릿을 등록하고 주제/키워드를 입력하면, Claude API가 슬라이드별 카피를 생성하고 Figma Plugin으로 텍스트를 삽입한다.
+
+---
+
+## 주요 기능
+
+- **템플릿 등록** — Figma URL 입력 시 텍스트 레이어 자동 파싱 + 역할 매핑
+- **카피 생성** — 모드·주제·키워드·조건 입력 → Claude API가 슬라이드별 카피 생성
+- **Figma 삽입** — 클립보드 JSON 복사 → Figma Plugin으로 레이어에 자동 삽입
+- **템플릿 재사용** — localStorage에 저장되어 다음에도 바로 사용
+
+---
+
+## 로컬 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env.local` 파일을 먼저 만들어야 한다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+FIGMA_ACCESS_TOKEN=figd_...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 환경변수
 
-To learn more about Next.js, take a look at the following resources:
+| 변수명 | 설명 | 발급 |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | Claude API 호출 | [console.anthropic.com](https://console.anthropic.com) → API Keys |
+| `FIGMA_ACCESS_TOKEN` | Figma 레이어 파싱 | Figma → Settings → Personal access tokens |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 사용 흐름 (4단계)
 
-## Deploy on Vercel
+1. **템플릿 등록** — Figma URL 입력 → 레이어 불러오기 → 역할 매핑 → 저장
+2. **내용 입력** — 모드 선택(멋사 홍보 / 공부 기록) → 주제·키워드 입력
+3. **조건 설정** — 슬라이드 수(1–10), 톤앤매너, 타겟 독자 설정
+4. **생성 & 삽입** — 카피 생성하기 → 클립보드 복사 → Figma Plugin에서 적용
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Figma Plugin 설치
+
+1. Figma 데스크탑 앱 → **로고 → Plugins → Development → Import plugin from manifest...**
+2. `cardflow-figma-plugin/manifest.json` 선택
+
+```bash
+# 플러그인 빌드 (최초 1회)
+cd cardflow-figma-plugin && npm install && npm run build
+```
+
+사용: Figma에서 **Plugins → Development → CardFlow** 실행 → "클립보드에서 적용"
+
+---
+
+## 개발 명령어
+
+```bash
+npm run dev          # 개발 서버
+npm run build        # 프로덕션 빌드
+npx tsc --noEmit     # 타입 체크
+npx playwright test  # E2E 테스트
+```
+
+---
+
+## 기술 스택
+
+| 영역 | 기술 |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript strict |
+| Styling | Tailwind CSS v4 + Whirlball 디자인 시스템 |
+| AI | Anthropic Claude API |
+| Figma | REST API (읽기) + Plugin API (쓰기) |
+| Test | Playwright |
+| Deploy | Vercel |
