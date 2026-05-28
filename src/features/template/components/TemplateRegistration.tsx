@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import type { LayerMapping } from '@/types/template';
+import type { ParsedLayer } from '@/types/template';
 import { parseFigmaLayers } from '@/app/actions/figma';
 import TextInput from '@/components/ui/TextInput';
 import Button from '@/components/ui/Button';
 
 interface TemplateRegistrationProps {
-  onLayersParsed: (layers: Pick<LayerMapping, 'nodeId' | 'layerName'>[], figmaUrl: string) => void;
+  onLayersParsed: (layers: ParsedLayer[], figmaUrl: string) => void;
 }
 
 export default function TemplateRegistration({ onLayersParsed }: TemplateRegistrationProps) {

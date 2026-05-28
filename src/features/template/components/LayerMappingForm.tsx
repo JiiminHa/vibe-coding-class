@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { LayerMapping, LayerRole, Template } from '@/types/template';
+import type { LayerMapping, LayerRole, ParsedLayer, Template } from '@/types/template';
 import { saveTemplates, loadTemplates } from '../storage';
 import TextInput from '@/components/ui/TextInput';
 import Button from '@/components/ui/Button';
@@ -17,7 +17,7 @@ const ROLES: { value: LayerRole; label: string }[] = [
 ];
 
 interface LayerMappingFormProps {
-  parsedLayers: Pick<LayerMapping, 'nodeId' | 'layerName'>[];
+  parsedLayers: ParsedLayer[];
   figmaUrl: string;
   onSave: (template: Template) => void;
   onCancel: () => void;

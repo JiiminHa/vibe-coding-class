@@ -6,7 +6,7 @@ import type { Template } from '@/types/template';
 import { buildClipboardJson } from '../utils';
 
 interface ResultPreviewProps {
-  generatedCopy: GeneratedCopy | null;
+  generatedCopy: GeneratedCopy;
   selectedTemplate: Template | null;
 }
 
@@ -14,10 +14,8 @@ export default function ResultPreview({ generatedCopy, selectedTemplate }: Resul
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'fallback'>('idle');
   const [fallbackJson, setFallbackJson] = useState('');
 
-  if (!generatedCopy) return null;
-
   async function handleCopyToClipboard() {
-    if (!generatedCopy || !selectedTemplate) return;
+    if (!selectedTemplate) return;
     const json = buildClipboardJson(generatedCopy, selectedTemplate);
     const text = JSON.stringify(json, null, 2);
     try {

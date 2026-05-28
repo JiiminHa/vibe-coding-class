@@ -26,7 +26,10 @@ export default function TemplateList({ templates, selectedTemplate, onSelect, on
           >
             <span className="text-sm font-medium">{t.name}</span>
             <button
-              onClick={(e) => { e.stopPropagation(); onDelete(t.id); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm(`"${t.name}" 템플릿을 삭제할까요?`)) onDelete(t.id);
+              }}
               className="text-xs opacity-60 hover:opacity-100 ml-4"
               aria-label={`${t.name} 삭제`}
             >

@@ -3,12 +3,17 @@
 import type { ContentInput, Tone } from '@/types/content';
 import TextInput from '@/components/ui/TextInput';
 
+type ConditionFields = Pick<ContentInput, 'slideCount' | 'tone' | 'targetAudience' | 'additionalRequest'>;
+
 interface ConditionFormProps {
-  contentInput: ContentInput;
-  onContentChange: (patch: Partial<ContentInput>) => void;
+  slideCount: number;
+  tone: Tone;
+  targetAudience: string;
+  additionalRequest?: string;
+  onContentChange: (patch: Partial<ConditionFields>) => void;
 }
 
-export default function ConditionForm({ contentInput, onContentChange }: ConditionFormProps) {
+export default function ConditionForm({ slideCount, tone, targetAudience, additionalRequest, onContentChange }: ConditionFormProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <TextInput
@@ -16,7 +21,7 @@ export default function ConditionForm({ contentInput, onContentChange }: Conditi
         type="number"
         min={1}
         max={10}
-        value={contentInput.slideCount}
+        value={slideCount}
         onChange={(e) => onContentChange({ slideCount: Math.min(10, Math.max(1, Number(e.target.value))) })}
       />
 
@@ -24,7 +29,7 @@ export default function ConditionForm({ contentInput, onContentChange }: Conditi
         <label className="text-sm font-medium text-primary">톤앤매너</label>
         <select
           className="min-h-[44px] rounded-md border border-hairline bg-white px-4 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-brand-pink/40"
-          value={contentInput.tone}
+          value={tone}
           onChange={(e) => onContentChange({ tone: e.target.value as Tone })}
         >
           <option value="friendly">친근하게</option>
@@ -35,15 +40,15 @@ export default function ConditionForm({ contentInput, onContentChange }: Conditi
 
       <TextInput
         label="타겟 독자"
-        placeholder="누구에게 보여줄까요? (예: 취업 준비생, 재학생)"
-        value={contentInput.targetAudience}
+        placeholder="예: 취업 준비생, 재학생"
+        value={targetAudience}
         onChange={(e) => onContentChange({ targetAudience: e.target.value })}
       />
 
       <TextInput
         label="추가 요청 (선택)"
         placeholder="특별히 반영할 내용이 있다면?"
-        value={contentInput.additionalRequest ?? ''}
+        value={additionalRequest ?? ''}
         onChange={(e) => onContentChange({ additionalRequest: e.target.value })}
       />
     </div>

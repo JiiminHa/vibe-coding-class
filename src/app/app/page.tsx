@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { Template, LayerMapping } from '@/types/template';
+import { useState } from 'react';
 import type { ContentInput } from '@/types/content';
-import type { GeneratedCopy } from '@/types/copy';
-import { loadTemplates, saveTemplates } from '@/features/template/storage';
-import { generateCopy } from '@/app/actions/generate';
+import { useTemplateState } from '@/features/template/hooks/useTemplateState';
+import { useGenerateState } from '@/features/generate/hooks/useGenerateState';
 import AppHeader from '@/components/layout/AppHeader';
 import EmptyState from '@/components/ui/EmptyState';
 import TemplateList from '@/features/template/components/TemplateList';
@@ -16,7 +14,7 @@ import ContentInputForm from '@/features/content/components/ContentInputForm';
 import ConditionForm from '@/features/content/components/ConditionForm';
 import GenerateButton from '@/features/generate/components/GenerateButton';
 import ResultPreview from '@/features/generate/components/ResultPreview';
-import FigmaInsertButton from '@/features/generate/components/FigmaInsertButton';
+import FigmaInsertGuide from '@/features/generate/components/FigmaInsertGuide';
 
 const DEFAULT_CONTENT: ContentInput = {
   mode: 'likelion',
@@ -29,20 +27,21 @@ const DEFAULT_CONTENT: ContentInput = {
 };
 
 export default function AppPage() {
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [parsedLayers, setParsedLayers] = useState<Pick<LayerMapping, 'nodeId' | 'layerName'>[] | null>(null);
-  const [parsedFigmaUrl, setParsedFigmaUrl] = useState('');
-  const [contentInput, setContentInput] = useState<ContentInput>(DEFAULT_CONTENT);
-  const [generatedCopy, setGeneratedCopy] = useState<GeneratedCopy | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    templates,
+    selectedTemplate,
+    setSelectedTemplate,
+    parsedLayers,
+    parsedFigmaUrl,
+    handleLayersParsed,
+    handleTemplateSave,
+    handleTemplateDelete,
+    clearParsedLayers,
+  } = useTemplateState();
 
-  useEffect(() => {
-    const saved = loadTemplates();
-    setTemplates(saved);
-    if (saved.length > 0) setSelectedTemplate(saved[0]);
-  }, []);
+  const { generatedCopy, isLoading, error, handleGenerate } = useGenerateState();
+
+  const [contentInput, setContentInput] = useState<ContentInput>(DEFAULT_CONTENT);
 
   function handleContentChange(patch: Partial<ContentInput>) {
     setContentInput((prev) => ({ ...prev, ...patch }));
@@ -52,42 +51,14 @@ export default function AppPage() {
     setContentInput((prev) => ({ ...prev, mode, subject: '', keywords: '' }));
   }
 
-  function handleLayersParsed(layers: Pick<LayerMapping, 'nodeId' | 'layerName'>[], figmaUrl: string) {
-    setParsedLayers(layers);
-    setParsedFigmaUrl(figmaUrl);
-  }
-
-  function handleTemplateSave(template: Template) {
-    const updated = loadTemplates();
-    setTemplates(updated);
-    setSelectedTemplate(template);
-    setParsedLayers(null);
-    setParsedFigmaUrl('');
-  }
-
-  function handleTemplateDelete(id: string) {
-    const updated = templates.filter((t) => t.id !== id);
-    saveTemplates(updated);
-    setTemplates(updated);
-    if (selectedTemplate?.id === id) setSelectedTemplate(updated[0] ?? null);
-  }
-
-  async function handleGenerate() {
-    if (!selectedTemplate) return;
-    setIsLoading(true);
-    setError(null);
-    setGeneratedCopy(null);
-    try {
-      const copy = await generateCopy(contentInput, selectedTemplate);
-      setGeneratedCopy(copy);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '카피 생성에 실패했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   const isGenerateDisabled = !selectedTemplate || !contentInput.subject.trim() || !contentInput.keywords.trim();
+  const generateDisabledReason = !selectedTemplate
+    ? '1단계에서 Figma 템플릿을 먼저 선택하세요.'
+    : !contentInput.subject.trim()
+    ? '2단계에서 카드뉴스 주제를 입력하세요.'
+    : !contentInput.keywords.trim()
+    ? '2단계에서 핵심 키워드를 입력하세요.'
+    : undefined;
 
   return (
     <div className="min-h-screen bg-canvas pb-24">
@@ -121,7 +92,7 @@ export default function AppPage() {
                 parsedLayers={parsedLayers}
                 figmaUrl={parsedFigmaUrl}
                 onSave={handleTemplateSave}
-                onCancel={() => setParsedLayers(null)}
+                onCancel={clearParsedLayers}
               />
             )}
 
@@ -146,7 +117,11 @@ export default function AppPage() {
 
           <div className="space-y-8">
             <ModeSelector mode={contentInput.mode} onModeChange={handleModeChange} />
-            <ContentInputForm contentInput={contentInput} onContentChange={handleContentChange} />
+            <ContentInputForm
+              subject={contentInput.subject}
+              keywords={contentInput.keywords}
+              onContentChange={handleContentChange}
+            />
           </div>
         </section>
 
@@ -160,7 +135,13 @@ export default function AppPage() {
             </div>
           </header>
 
-          <ConditionForm contentInput={contentInput} onContentChange={handleContentChange} />
+          <ConditionForm
+            slideCount={contentInput.slideCount}
+            tone={contentInput.tone}
+            targetAudience={contentInput.targetAudience}
+            additionalRequest={contentInput.additionalRequest}
+            onContentChange={handleContentChange}
+          />
         </section>
 
         {/* Step 4: Generate & Result */}
@@ -177,7 +158,8 @@ export default function AppPage() {
             <GenerateButton
               isLoading={isLoading}
               disabled={isGenerateDisabled}
-              onClick={handleGenerate}
+              disabledReason={generateDisabledReason}
+              onClick={() => selectedTemplate && handleGenerate(contentInput, selectedTemplate)}
             />
 
             {error && (
@@ -187,7 +169,7 @@ export default function AppPage() {
             {generatedCopy && (
               <div className="space-y-8">
                 <ResultPreview generatedCopy={generatedCopy} selectedTemplate={selectedTemplate} />
-                <FigmaInsertButton />
+                <FigmaInsertGuide />
               </div>
             )}
           </div>

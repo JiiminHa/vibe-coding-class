@@ -1,6 +1,4 @@
-'use client';
-
-export default function FigmaInsertButton() {
+export default function FigmaInsertGuide() {
   return (
     <div className="flex flex-col items-center gap-3 py-6 border-t border-hairline mt-4">
       <p className="text-sm text-muted text-center">

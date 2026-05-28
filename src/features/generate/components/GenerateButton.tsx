@@ -6,10 +6,11 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 interface GenerateButtonProps {
   isLoading: boolean;
   disabled: boolean;
+  disabledReason?: string;
   onClick: () => void;
 }
 
-export default function GenerateButton({ isLoading, disabled, onClick }: GenerateButtonProps) {
+export default function GenerateButton({ isLoading, disabled, disabledReason, onClick }: GenerateButtonProps) {
   return (
     <div className="flex flex-col items-center gap-4 py-8">
       <Button
@@ -26,7 +27,11 @@ export default function GenerateButton({ isLoading, disabled, onClick }: Generat
           '카피 생성하기'
         )}
       </Button>
-      <p className="text-xs text-muted">Claude가 당신의 주제를 바탕으로 카피를 작성합니다.</p>
+      {disabled && !isLoading && disabledReason ? (
+        <p className="text-xs text-red-400" aria-live="polite">{disabledReason}</p>
+      ) : (
+        <p className="text-xs text-muted">Claude가 당신의 주제를 바탕으로 카피를 작성합니다.</p>
+      )}
     </div>
   );
 }

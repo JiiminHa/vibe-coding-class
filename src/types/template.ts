@@ -13,6 +13,9 @@ export interface LayerMapping {
   role: LayerRole;
 }
 
+/** Figma REST API 파싱 직후, role 매핑 전 상태 */
+export type ParsedLayer = Pick<LayerMapping, 'nodeId' | 'layerName'>;
+
 export interface Template {
   id: string;
   name: string;
