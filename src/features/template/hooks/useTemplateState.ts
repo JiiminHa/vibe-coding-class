@@ -12,6 +12,7 @@ export function useTemplateState() {
   const [parsedFigmaUrl, setParsedFigmaUrl] = useState('');
 
   useEffect(() => {
+    // 앱 첫 진입 시 저장된 템플릿 로드 + 첫 번째 자동 선택
     const saved = loadTemplates();
     setTemplates(saved);
     if (saved.length > 0) setSelectedTemplate(saved[0]);
@@ -23,7 +24,9 @@ export function useTemplateState() {
   }
 
   function handleTemplateSave(template: Template) {
-    const updated = loadTemplates();
+    // 이미 상태로 관리 중인 목록에 추가 — loadTemplates() 재호출 불필요
+    const updated = [...templates, template];
+    saveTemplates(updated);
     setTemplates(updated);
     setSelectedTemplate(template);
     setParsedLayers(null);

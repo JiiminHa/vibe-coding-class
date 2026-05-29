@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import type { ContentInput } from '@/types/content';
+import type { Template } from '@/types/template';
 import { useTemplateState } from '@/features/template/hooks/useTemplateState';
 import { useGenerateState } from '@/features/generate/hooks/useGenerateState';
+import { useContentInput } from '@/features/content/hooks/useContentInput';
 import AppHeader from '@/components/layout/AppHeader';
 import EmptyState from '@/components/ui/EmptyState';
 import TemplateList from '@/features/template/components/TemplateList';
@@ -15,16 +16,6 @@ import ConditionForm from '@/features/content/components/ConditionForm';
 import GenerateButton from '@/features/generate/components/GenerateButton';
 import ResultPreview from '@/features/generate/components/ResultPreview';
 import FigmaInsertGuide from '@/features/generate/components/FigmaInsertGuide';
-
-const DEFAULT_CONTENT: ContentInput = {
-  mode: 'likelion',
-  subject: '',
-  keywords: '',
-  slideCount: 5,
-  tone: 'friendly',
-  targetAudience: '',
-  additionalRequest: '',
-};
 
 export default function AppPage() {
   const {
@@ -40,25 +31,14 @@ export default function AppPage() {
   } = useTemplateState();
 
   const { generatedCopy, isLoading, error, handleGenerate } = useGenerateState();
+  const { contentInput, handleContentChange, handleModeChange } = useContentInput();
 
-  const [contentInput, setContentInput] = useState<ContentInput>(DEFAULT_CONTENT);
+  const isGenerateDisabled =
+    !selectedTemplate ||
+    !contentInput.subject.trim() ||
+    !contentInput.keywords.trim();
 
-  function handleContentChange(patch: Partial<ContentInput>) {
-    setContentInput((prev) => ({ ...prev, ...patch }));
-  }
-
-  function handleModeChange(mode: ContentInput['mode']) {
-    setContentInput((prev) => ({ ...prev, mode, subject: '', keywords: '' }));
-  }
-
-  const isGenerateDisabled = !selectedTemplate || !contentInput.subject.trim() || !contentInput.keywords.trim();
-  const generateDisabledReason = !selectedTemplate
-    ? '1단계에서 Figma 템플릿을 먼저 선택하세요.'
-    : !contentInput.subject.trim()
-    ? '2단계에서 카드뉴스 주제를 입력하세요.'
-    : !contentInput.keywords.trim()
-    ? '2단계에서 핵심 키워드를 입력하세요.'
-    : undefined;
+  const generateDisabledReason = getDisabledReason(selectedTemplate, contentInput);
 
   return (
     <div className="min-h-screen bg-canvas pb-24">
@@ -106,7 +86,7 @@ export default function AppPage() {
         </section>
 
         {/* Step 2: Content */}
-        <section className="space-y-8 bg-brand-peach/5 p-8 md:p-12 rounded-xl border border-brand-peach/20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+        <section className={`space-y-8 bg-brand-peach/5 p-8 md:p-12 rounded-xl border border-brand-peach/20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 transition-opacity ${!selectedTemplate ? 'opacity-40 pointer-events-none select-none' : ''}`}>
           <header className="flex items-center gap-4">
             <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-brand-peach text-white text-lg font-bold shadow-sm">2</span>
             <div>
@@ -127,7 +107,7 @@ export default function AppPage() {
         </section>
 
         {/* Step 3: Condition */}
-        <section className="space-y-8 bg-brand-lavender/5 p-8 md:p-12 rounded-xl border border-brand-lavender/20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+        <section className={`space-y-8 bg-brand-lavender/5 p-8 md:p-12 rounded-xl border border-brand-lavender/20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 transition-opacity ${!selectedTemplate ? 'opacity-40 pointer-events-none select-none' : ''}`}>
           <header className="flex items-center gap-4">
             <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-brand-lavender text-white text-lg font-bold shadow-sm">3</span>
             <div>
@@ -146,7 +126,7 @@ export default function AppPage() {
         </section>
 
         {/* Step 4: Generate & Result */}
-        <section className="space-y-10 bg-brand-pink/5 p-8 md:p-12 rounded-xl border border-brand-pink/10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+        <section className={`space-y-10 bg-brand-pink/5 p-8 md:p-12 rounded-xl border border-brand-pink/10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 transition-opacity ${!selectedTemplate ? 'opacity-40 pointer-events-none select-none' : ''}`}>
           <header className="flex items-center gap-4">
             <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-brand-pink text-white text-lg font-bold shadow-sm">4</span>
             <div>
@@ -178,8 +158,19 @@ export default function AppPage() {
       </main>
 
       <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-hairline text-center">
-        <p className="text-sm text-muted">© 2024 CardFlow. All rights reserved.</p>
+        <p className="text-sm text-muted">© {new Date().getFullYear()} CardFlow. All rights reserved.</p>
       </footer>
     </div>
   );
+}
+
+// ── 순수 유틸 ─────────────────────────────────────────────────────────────
+function getDisabledReason(
+  selectedTemplate: Template | null,
+  contentInput: ContentInput,
+): string | undefined {
+  if (!selectedTemplate) return '1단계에서 Figma 템플릿을 먼저 선택하세요.';
+  if (!contentInput.subject.trim()) return '2단계에서 카드뉴스 주제를 입력하세요.';
+  if (!contentInput.keywords.trim()) return '2단계에서 핵심 키워드를 입력하세요.';
+  return undefined;
 }

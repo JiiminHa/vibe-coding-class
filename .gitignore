@@ -43,3 +43,6 @@ next-env.d.ts
 # figma plugin
 cardflow-figma-plugin/node_modules
 cardflow-figma-plugin/dist
+
+/test-results
+/playwright-report

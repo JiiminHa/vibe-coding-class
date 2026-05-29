@@ -20,10 +20,14 @@ export default function TemplateRegistration({ onLayersParsed }: TemplateRegistr
     setIsLoading(true);
     setError(null);
     try {
-      const layers = await parseFigmaLayers(url.trim());
-      onLayersParsed(layers, url.trim());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '레이어 파싱에 실패했습니다.');
+      const result = await parseFigmaLayers(url.trim());
+      if (!result.ok) {
+        setError(result.error);
+      } else {
+        onLayersParsed(result.layers, url.trim());
+      }
+    } catch {
+      setError('레이어 파싱에 실패했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +58,7 @@ export default function TemplateRegistration({ onLayersParsed }: TemplateRegistr
         </div>
 
         {error && (
-          <p className="mt-3 text-sm text-red-500" aria-live="polite">{error}</p>
+          <p data-testid="figma-url-error" className="mt-3 text-sm text-red-500" aria-live="polite">{error}</p>
         )}
       </div>
     </div>
