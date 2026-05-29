@@ -23,14 +23,14 @@
 
 ## 4. Vercel 배포
 
-- [ ] 4.1 `vercel` CLI로 프로젝트 연결 (`vercel link` 또는 `vercel`)
-- [ ] 4.2 `ANTHROPIC_API_KEY` Vercel 환경변수 등록
-- [ ] 4.3 `FIGMA_ACCESS_TOKEN` Vercel 환경변수 등록
-- [ ] 4.4 `vercel --prod` 배포 실행
-- [ ] 4.5 배포된 public URL에서 앱 로드 확인
-- [ ] 4.6 배포 URL을 README에 추가
+- [x] 4.1 `vercel` CLI로 프로젝트 연결 (`vercel link` 또는 `vercel`)
+- [ ] 4.2 `ANTHROPIC_API_KEY` Vercel 환경변수 등록 (직접 입력 필요)
+- [ ] 4.3 `FIGMA_ACCESS_TOKEN` Vercel 환경변수 등록 (직접 입력 필요)
+- [x] 4.4 `vercel --prod` 배포 실행
+- [x] 4.5 배포된 public URL에서 앱 로드 확인 — https://vibe-coding-class-seven.vercel.app
+- [x] 4.6 배포 URL을 README에 추가
 
 ## 5. 최종 커밋
 
-- [ ] 5.1 변경 파일 전체 `git add` 및 커밋
-- [ ] 5.2 `git push origin main`
+- [x] 5.1 변경 파일 전체 `git add` 및 커밋
+- [x] 5.2 `git push origin main`
